@@ -1,4 +1,5 @@
 # Polyglot training
+
 ## My journey to learn more programming languages
 
 The purpose of this repository is to try solve problems with different programming languages.
@@ -14,3 +15,5 @@ Once there, I can start writing real code, starting with a language that i know 
 ## Sources
 
 - [LeetCode](https://leetcode.com)
+- [Coding Challenges](https://codingchallenges.fyi/)
+
