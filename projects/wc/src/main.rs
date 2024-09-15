@@ -10,6 +10,7 @@ enum Action {
     Help,
     Bytes,
     Lines,
+    Words,
 }
 
 fn main() {
@@ -40,6 +41,7 @@ fn main() {
         }
         Action::Bytes => count_bytes(path),
         Action::Lines => count_lines(path),
+        Action::Words => count_words(path),
     };
 
     println!("{result}\t{display}")
@@ -58,6 +60,7 @@ fn validate_args(args: &[String]) -> Result<Action, &'static str> {
         3 => match args[1].as_str() {
             "-c" | "--bytes" => Ok(Action::Bytes),
             "-l" | "--lines" => Ok(Action::Lines),
+            "-w" | "--words" => Ok(Action::Words),
             _ => Err("Unrecognized option"),
         },
         _ => Err("Too many arguments"),
@@ -101,4 +104,20 @@ fn count_lines(path: &Path) -> usize {
     let reader = BufReader::new(file);
 
     reader.lines().count()
+}
+
+fn count_words(path: &Path) -> usize {
+    let display = path.display();
+
+    let mut file = match File::open(path) {
+        Err(why) => panic!("couldn't open {}: {}", display, why),
+        Ok(file) => file,
+    };
+
+    let mut buf: String = Default::default();
+    if let Err(why) = file.read_to_string(&mut buf) {
+        panic!("couldn't read {}: {}", display, why)
+    }
+
+    buf.split_whitespace().count()
 }
