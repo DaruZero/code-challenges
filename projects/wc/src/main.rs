@@ -1,22 +1,57 @@
 use std::{env::args, fs::File, io::Read, path::Path, process::exit};
 
+enum Action {
+    Help,
+    Bytes,
+}
+
 fn main() {
     let args: Vec<_> = args().collect();
 
-    // if no args or `-h`, print help and exit
-    if args.len() == 1 || (&args[1] == "-h" || &args[1] == "--help") {
-        print_help();
-        exit(0);
-    }
+    let action = match validate_args(&args) {
+        Ok(action) => match action {
+            Action::Help => {
+                print_help();
+                exit(0)
+            }
+            _ => action,
+        },
+        Err(why) => {
+            println!("Wrong usage: {}", why);
+            print_help();
+            exit(1)
+        }
+    };
 
-    if args.len() > 3 {
-        println!("Too many arguments");
-        print_help();
-        exit(1)
-    }
+    let path = Path::new(args[2].as_str());
+    let display = path.display();
 
-    if args[1] == "-c" || args[1] == "--bytes" {
-        let bytes = count_bytes(args[2].as_str());
+    let result = match action {
+        Action::Help => {
+            print_help();
+            exit(0)
+        }
+        Action::Bytes => count_bytes(path),
+    };
+
+    println!("{result}\t{display}")
+}
+
+fn validate_args(args: &[String]) -> Result<Action, &'static str> {
+    match args.len() {
+        1 => Ok(Action::Help),
+        2 => {
+            if args[1] != "-h" && args[1] != "--help" {
+                Err("Missing argument")
+            } else {
+                Ok(Action::Help)
+            }
+        }
+        3 => match args[1].as_str() {
+            "-c" | "--bytes" => Ok(Action::Bytes),
+            _ => Err("Unrecognized option"),
+        },
+        _ => Err("Too many arguments"),
     }
 }
 
@@ -30,8 +65,7 @@ The options below may be used
     );
 }
 
-fn count_bytes(path_to_file: &str) -> usize {
-    let path = Path::new(path_to_file);
+fn count_bytes(path: &Path) -> usize {
     let display = path.display();
 
     let mut file = match File::open(path) {
