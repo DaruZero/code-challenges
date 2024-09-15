@@ -1,8 +1,15 @@
-use std::{env::args, fs::File, io::Read, path::Path, process::exit};
+use std::{
+    env::args,
+    fs::File,
+    io::{BufRead, BufReader, Read},
+    path::Path,
+    process::exit,
+};
 
 enum Action {
     Help,
     Bytes,
+    Lines,
 }
 
 fn main() {
@@ -32,6 +39,7 @@ fn main() {
             exit(0)
         }
         Action::Bytes => count_bytes(path),
+        Action::Lines => count_lines(path),
     };
 
     println!("{result}\t{display}")
@@ -49,6 +57,7 @@ fn validate_args(args: &[String]) -> Result<Action, &'static str> {
         }
         3 => match args[1].as_str() {
             "-c" | "--bytes" => Ok(Action::Bytes),
+            "-l" | "--lines" => Ok(Action::Lines),
             _ => Err("Unrecognized option"),
         },
         _ => Err("Too many arguments"),
@@ -79,4 +88,17 @@ fn count_bytes(path: &Path) -> usize {
     }
 
     buf.len()
+}
+
+fn count_lines(path: &Path) -> usize {
+    let display = path.display();
+
+    let file = match File::open(path) {
+        Err(why) => panic!("couldn't open {}: {}", display, why),
+        Ok(file) => file,
+    };
+
+    let reader = BufReader::new(file);
+
+    reader.lines().count()
 }
