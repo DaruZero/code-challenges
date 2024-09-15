@@ -1,30 +1,22 @@
 use std::{env::args, process::exit};
 
-const FLAG_HELP: &str = "-h";
-const FLAG_BYTE: &str = "-c";
-
 fn main() {
-    // if no args or FLAG_HELP arg, print help and exit
-    if args().len() == 1 && args().nth(2).expect("Cannot read args") == FLAG_HELP {
+    let args: Vec<_> = args().collect();
+
+    // if no args or `-h`, print help and exit
+    if args.len() == 1 || (&args[1] == "-h" || &args[1] == "--help") {
         print_help();
         exit(0);
     }
 
-    if args().len() > 3 {
+    if args.len() > 3 {
         println!("Too many arguments");
         print_help();
         exit(1)
     }
 
-    match args().nth(2) {
-        FLAG_BYTE => {
-            count_bytes();
-        }
-        _ => {
-            println!("Unrecognized argument");
-            print_help();
-            exit(1)
-        }
+    if args[1] == "-c" || args[1] == "--bytes" {
+        count_bytes()
     }
 }
 
@@ -38,4 +30,6 @@ The options below may be used
     );
 }
 
-fn count_bytes() {}
+fn count_bytes() {
+    panic!("not implemented");
+}
