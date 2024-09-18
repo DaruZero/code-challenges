@@ -75,10 +75,13 @@ fn validate_args(args: &[String]) -> Result<Action, &'static str> {
 fn print_help() {
     println!(
         "Usage: wc [OPTION] [FILE]
-Print byte counts for each FILE
+Print newline, word, and byte counts for each FILE
 
 The options below may be used
-  -c, --bytes            print the byte counts"
+  -c, --bytes            print the byte count
+  -l, --lines            print the line count
+  -w, --words            print the word count
+  -m, --chars            print the character count"
     );
 }
 
