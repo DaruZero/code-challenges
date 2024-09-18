@@ -6,11 +6,14 @@ use std::{
     process::exit,
 };
 
+use utf8_chars::BufReadCharsExt;
+
 enum Action {
     Help,
     Bytes,
     Lines,
     Words,
+    Chars,
 }
 
 fn main() {
@@ -42,6 +45,7 @@ fn main() {
         Action::Bytes => count_bytes(path),
         Action::Lines => count_lines(path),
         Action::Words => count_words(path),
+        Action::Chars => count_chars(path),
     };
 
     println!("{result}\t{display}")
@@ -61,6 +65,7 @@ fn validate_args(args: &[String]) -> Result<Action, &'static str> {
             "-c" | "--bytes" => Ok(Action::Bytes),
             "-l" | "--lines" => Ok(Action::Lines),
             "-w" | "--words" => Ok(Action::Words),
+            "-m" | "--chars" => Ok(Action::Chars),
             _ => Err("Unrecognized option"),
         },
         _ => Err("Too many arguments"),
@@ -120,4 +125,17 @@ fn count_words(path: &Path) -> usize {
     }
 
     buf.split_whitespace().count()
+}
+
+fn count_chars(path: &Path) -> usize {
+    let display = path.display();
+
+    let file = match File::open(path) {
+        Err(why) => panic!("couldn't open {}: {}", display, why),
+        Ok(file) => file,
+    };
+
+    let mut reader = BufReader::new(file);
+
+    reader.chars().count()
 }

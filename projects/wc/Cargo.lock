@@ -3,5 +3,23 @@
 version = 3
 
 [[package]]
+name = "arrayvec"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
+
+[[package]]
+name = "utf8-chars"
+version = "3.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66f9218bb39c445e7b21b650c6f82108859cc0609082abe2820c1f7a2e8b2a5f"
+dependencies = [
+ "arrayvec",
+]
+
+[[package]]
 name = "wc"
 version = "0.1.0"
+dependencies = [
+ "utf8-chars",
+]
